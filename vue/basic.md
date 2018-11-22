@@ -73,7 +73,7 @@ new Vue({
 })
 </script>
 ```
-## Vue与JavaScript均可以使用
+> Vue与JavaScript均可以使用
 ```html
 <div id="app">
 	{{5+5}}<br>
@@ -146,6 +146,303 @@ new Vue({
 </div>
 ```
 ### 1.6 `v-for`循环
+#### 1.6.1 数组循环
 ```html
+<div id="app">
+    <ol>
+        <li v-for="site in sites">
+            {{site.name}}
+        </li>
+    </l>
+    <!-- 使用模板 -->
+    <ul>
+        <template v-for="site in sites">
+            <li>{{site.name}}</li>
+            <li>------</li>
+        </template>
+    </ul>
+</div>
+
+<script>
+new Vue({
+    el:"#app",
+    data:{
+        sites:[
+            {name:'google'},
+            {name:'baidu'}
+        ]
+    }
+})
+</script>
+```
+#### 1.6.2 使用属性
+```html
+<div id="app">
+    <ol>
+    <!-- 使用value属性 -->
+        <li v-for="value in object">
+            {{value}}
+        </li>
+    </l>
+</div>
+
+<script>
+new Vue({
+    el:"#app",
+    data:{
+        object:{
+            name:'google',
+            address:'Shanghai'
+        }
+    }
+})
+</script>
+```
+#### 1.6.3 多参数 `{key,value}`,`{key,value,index}`
+```html
+<!-- 两个参数 -->
+<li v-for="{key,value} in object">
+    {{key}}:{{value}}
+</li>
+<!-- 三个参数 -->
+<li v-for="{key,value,index} in object">
+   {{index}}.{{key}}:{{value}}
+</li>
+```
+#### 1.6.4 迭代 整数
+```html
+ <li v-for="n in 10">
+     {{ n }}
+</li>
+```
+### 1.7 计算属性
+#### 1.7.1 `computed`与`methods`
+> 1. `computed`与`methods`作用相同
+
+> 2. `computed`依赖于缓存,只有相关依赖发生变化时才会重新取值,所以性能更好
+
+>  3. `methods` 重新渲染时,函数总会重新调用
+
+```html
+<script>
+new Vue({
+    el:"#app",
+    data:{
+        msg:'hello longer'
+    }
+    computed:{
+        reverseMsg:function(){
+            return this.msg.split('').reverse().join('')
+        }
+    }  
+})
+</script>
+```
+
+#### 1.7.2 `computed`默认只有`getter`,没有`setter`(但可以自定义)
+
+```html
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+            msg:'hello longer'
+        }
+        computed:{
+            Longer{
+                get:function(){
+                    return this.msg.split('').reverse().join('')
+                }
+                set:function(newValue){
+                    var names=newValue.split(' ')
+                    this.msg=names[0]
+                }    
+            }  
+        }  
+    })
+    //调用setter
+    vm.Longer='longer\' world coming!';
+    domcument.wirte('msg:'+vm.msg);
+</script>
 
 ```
+
+### 1.8 `watch`--监听属性
+
+```html
+<div id="app">
+    <p style="font-size:25px">
+        计数器:{{counter}}
+    </p>
+    <button @click="counter++" style="font-size:25px">
+        come on!
+    </button>
+</div>
+<script>
+    var vm=new Vue({
+        el:'#app',
+        data:{
+            counter:1
+        }
+    });
+    //oval原来的值
+    //nval现在的值
+    vm.$watch('watch',function(nval,oval){
+        alert('计数器的变化: '+oval +'变为'+nval+'!');
+    });
+</script>
+
+```
+
+#### 1.8.1 实例
+
+```html
+<div id="app">
+    <input style="font-size:25px" v-model="kilometers">
+        {{kilometers}}千米
+    </input>
+    <input style="font-size:25px" v-model="meters">
+        {{meters}}米
+    </input>
+    <p id="info"></p>
+</div>
+<script>
+    var vm=new Vue({
+        el:'#app',
+        data:{
+            kilometers:0,
+            meters:0
+        },
+        watch{
+            kilometers:function(val){
+                this.kilometers=val
+                this.meters=val*1000;
+            },
+            meters:function(val){
+                this.meters=val;
+                this.kilometers=val/1000;
+            }
+        }
+    });
+    //oval原来的值
+    //nval现在的值
+    vm.$watch('kilometers',function(nval,oval){
+        domcument.getElementById("info").innerHTML='kilometers的变化: '+oval +'变为'+nval+'!';
+    });
+</script>
+
+```
+
+### 1.9 样式绑定
+#### 1.9.1 属性绑定
+> 有两种方式,传入属性(可包括多个)或对象
+
+```html
+  <div v-bind:class="{active:isActive,'text-danger':false}"></div>
+  <div v-bind:class="classObject"></div>
+```
+
+```html
+<style>
+.base {
+  width: 100px;
+  height: 100px;
+}
+
+.active {
+  background: green;
+}
+
+.text-danger {
+  background: red;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div v-bind:class="{active:isActive}"></div>
+  <div v-bind:class="classObject"></div>
+</div>
+<script>
+
+new Vue({
+  el: '#app',
+  data: {
+    isActive: true,
+    error: {
+      value: true,
+      type: 'fatal'
+    }
+  },
+  computed: {
+    classObject: function () {
+        //返回属性
+      return {
+        base: true,
+        active: this.isActive && this.error.value,
+        //text-danger会覆盖active类的颜色
+        'text-danger': !this.error.value && this.error.type === 'fatal'
+      }
+    }
+  }
+})
+</script>
+```
+
+#### 1.9.2 数据语法
+```html
+<div id="app">
+<!-- 等同于  class="active text-danger" -->
+	<div v-bind:class="[activeClass, errorClass]"></div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    activeClass: 'active',
+    errorClass: 'text-danger'
+  }
+})
+</script>
+```
+
+#### 1.9.3 内联样式
+
+```html
+<div id="app">
+    <div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">
+        菜鸟教程
+    </div>
+    <!-- 直接绑定一个样式对象 -->
+    <div v-bind:style="styleObject">菜鸟教程</div>
+    <!-- 绑定多个对象 -->
+    <div v-bind:style="[baseStyles, overridingStyles]">菜鸟教程</div>
+</div>
+​<script>
+    new Vue({
+    el: '#app',
+    data: {
+        activeColor: 'green',
+        fontSize: 30,
+        styleObject: {
+        color: 'green',
+        fontSize: '30px'
+        },
+        baseStyles: {
+        color: 'green',
+        fontSize: '30px'
+        },
+        overridingStyles: {
+        'font-weight': 'bold'
+        }
+    }
+    })
+</script>
+
+```
+
+### 1.10 `v-on`--事件处理器
+
+
+
