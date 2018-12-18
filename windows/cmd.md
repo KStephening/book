@@ -2,6 +2,6 @@
 ## 端口被占用
 ```cmd
 
-
-taskkill /f /t /im
+netstat -ano|findstr 8080
+taskkill /f /t /im 12048
 ```

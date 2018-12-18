@@ -37,8 +37,13 @@
     - final Buffer position(int newPosition)
     - final Buffer limit(int newLimit)
     - position()
+    - position(int) postion=newPosition 如果position< mark,重置mark
     - limit()
+    - mark() 一个备忘位置,保存当前的position
     - capacity()
+    - wrap(byte[],int begin,int length)
+    - wrap(byte[])
+        - 组装到新的buffer，capacity=limit=byte[].length，position=0 重置mark
     - slice()
         - 根据现有的缓冲区创建一种子缓冲区.
         - 子缓冲区与原来的缓冲区共享数据
@@ -85,6 +90,7 @@ while (slice.hasRemaining()){
         - 必须非常小心地进行这类操作。一旦完成包装，底层数据就可以通过缓冲区或者直接访问。
     - ByteBuffer put(int i, byte x)
         - 指定的索引写入一个元素
+        - 也就是说可以覆盖
     - final ByteBuffer put(byte[] src)
         - 写入一个自己数组，position+=src.length
     - ByteBuffer put(byte[] src, int offset, int length)
