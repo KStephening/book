@@ -444,5 +444,21 @@ new Vue({
 
 ### 1.10 `v-on`--事件处理器
 
+## 2. vue进阶
+
+### 2.1 cli安装
+
+`npm install -g vue-cli`
+
+### 2.2 创建项目
+1. 方式一
+打开指定目录
+`vue init webpack myProject`
+
+2. 方式二
+
+``
+
+
 
 
