@@ -1,7 +1,7 @@
 # VUE-BASIC
 ## 1.basic
 ### 1.1 `el`--选择器
-### 1.2 `$`--实例属性与方法
+### 1.2 `### --实例属性与方法
 ```html
 <div id="vue_det">
     <h1>site : {{site}}</h1>
@@ -444,6 +444,30 @@ new Vue({
 
 ### 1.10 `v-on`--事件处理器
 
+### 1.11 `$mount` 挂载
+
+1. 参数
+    - {Element|string}[elementOrSelector]
+    - {boolean}[hydrating]
+2. 返回值--实力本身
+3. 实例
+
+```javascript
+var MyComponent=Vue.extend({
+    template:'<div>hello</div>'
+})
+
+//用法一    创建并挂载到#app  (会替换#app)
+new MyComponent().$.mount('#app')
+//同上
+new MyComponent({el:'#app'})
+
+```
+
+
+
+
+
 ## 2. vue进阶
 
 ### 2.1 cli安装
@@ -452,13 +476,26 @@ new Vue({
 
 ### 2.2 创建项目
 1. 方式一
-打开指定目录
-`vue init webpack myProject`
+  打开指定目录
+  `vue init webpack myProject`
 
 2. 方式二
 
-``
+   `vue ui`打开创建页面
+
+   ![1546056073472](assets/1546056073472.png)
+
+   根据提示,就可以创建项目了.
+
+   创建完之后的页面.可以运行,编译等
+
+![1546060358586](assets/1546060358586.png)
+
+选择在编辑器打开项目
+
+![1546060383947](assets/1546060383947.png)
 
 
 
+### 运行,编译
 
