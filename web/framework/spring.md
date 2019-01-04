@@ -1,6 +1,9 @@
 # Spring
 
-## 1. Bean的装配与注入
+## 1. IOC
+
+##  Bean的装配与注入
+
 ### 1.1 注入
 - 构造器注入
 - setter注入
@@ -84,12 +87,6 @@ Car  car= bf.getBean("car",Car.class)
 
 ![1546500370100](assets/1546500370100.png)
 
-
-
-
-
-
-
 ![1546502157851](assets/1546502157851.png)
 
 #### 注解实例
@@ -107,7 +104,7 @@ public class MyComponent {
 		System.out.println(name+"走位走位,躲过了,并且发出大招");
 		System.out.println("嬴政危机时刻,闪现避退了"+name+"的大招");
 		System.out.println(name+"再次靠近,发起攻击");
-		System.out.println("嬴政更好大招解锁完毕,释放大招");
+		System.out.println("嬴政刚好大招解锁完毕,释放大招");
 		System.out.println("随着无数的剑芒扫射而来,"+name+"被虐杀");
 		System.out.println("嬴政胜");
 	}
@@ -136,6 +133,93 @@ public class HeroServiceImpl implements HeroService {
 
 
 ![1546506428333](assets/1546506428333.png)
+
+
+
+#### @Qualifiers与@Resource
+
+@Qualifiers使的@Autowire更加明确,但是可以直接使用@Resources替代
+
+对于多参数的方法,使用@Qualifiers更好
+
+
+
+#### @Bean
+
+> 默认@Bean是单例的,可以使用@Scope(可以指定代理方式')
+
+> 类似于xml中的`<bean/>`
+
+> 与@Bean一起使用的是@Configuration(虽然使用@Component也可以),两者结合在一起,相当于xml中的
+
+```xml
+<beans>
+	<bean/>
+</beans>
+```
+
+> 如果没有使用name,那么将使用方法名作为bean的name(即xml中的beanId)
+
+```java
+@Bean(name="myFoo",initMethod="init",destroyMethod="dest")
+public Foo foo(){
+    return new Foo();
+}
+```
+
+#### 在xml中使用properties文件
+
+
+
+1. 可以同时引用多个配置文件
+
+```xml
+  <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <!-- 推荐使用file的方式引入，这样可以将配置和代码分离 -->
+                <value>classpath:db_config.properties</value>
+            </list>
+        </property>
+    </bean>
+```
+
+
+
+2. 引用一个文件,更方便
+
+```xml
+<context:property-placeholder location="classpath:conn.properties"/><!-- 加载配置文件 -->
+ 
+<!-- com.mchange.v2.c3p0.ComboPooledDataSource类在c3p0-0.9.5.1.jar包的com.mchange.v2.c3p0包中 -->
+ <bean id="dataSource" class="${dataSource}"> <!-- 这些配置Spring在启动时会去conn.properties中找 -->
+ 	<property name="driverClass" value="${driverClass}" />
+ 	<property name="jdbcUrl" value="${jdbcUrl}" />
+ 	<property name="user" value="${user}" />
+ 	<property name="password" value="${password}" />
+ </bean>
+```
+
+
+
+#### 使用注解,引用配置文件
+
+![1546562267180](assets/1546562267180.png)
+
+
+
+#### 使用泛型
+
+
+
+![1546593736885](assets/1546593736885.png)
+
+#### 其他
+
+@Named与@Component作用相同,可以用指定特定名称的bean
+
+@Inject等效于@Autowire
 
 ## 2. bean 的生命周期
 
@@ -199,4 +283,7 @@ res.contentLength();
 
 如果path前面是空,如(`config.txt`) ,那么 将applicationContext的路径作为目标路径
 
+## 3. AOP
+
+![1546595217931](assets/1546595217931.png)
 
