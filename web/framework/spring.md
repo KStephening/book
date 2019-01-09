@@ -285,5 +285,104 @@ res.contentLength();
 
 ## 3. AOP
 
+
+
 ![1546595217931](assets/1546595217931.png)
 
+ 	1. 一般情况下,切面是一个类,定义了切入点,通知等
+ 	2. 切入点,就是被切面拦截的方法
+ 	3. 通知,就是对一个方法的前后等执行的动作
+ 	4. Spring并不支持全部的AOP
+
+### 3.1  spring配置
+
+> 切面的配置全部放置在`<aop:config>`内
+>
+> xml中可以包含多个切面(多个`<aop:config>`)
+>
+> 配置中可以包含pointcut,advisor,aspect元素,*必须按照这个顺序*
+>
+> 所有基于配置文件的aspect只支持单例模式
+
+```xml
+<aop:config>
+	<aop:aspect></aop:aspect>
+</aop:config>
+```
+
+### 3.2	切入点
+
+![1546830002957](assets/1546830002957.png)
+
+spring特有
+
+![1546830898931](assets/1546830898931.png)
+
+其他...很多...
+
+### 3.3 通知
+
+> after和afterReturning不一样,after(finally)一定会执行,不过afterReturning在抛出异常就不会执行
+
+### 3.4 环绕通知
+
+
+
+### 3.5 通知参数
+
+
+
+### 3.6 Introductions
+
+
+
+![1546841278945](assets/1546841278945.png)
+
+### 3.7 Advisor
+
+![1546842878629](assets/1546842878629.png)
+
+![1546847897845](assets/1546847897845.png)
+
+
+
+
+
+### 3.8 AspectJ
+
+![1546849149488](assets/1546849149488.png)
+
+![1546849214951](assets/1546849214951.png)
+
+![1546849349787](assets/1546849349787.png)
+
+### 3.9 注解
+
+>  @Aspect注解的类必须被定义为一个bean,可以使用@Component或者在xml定义
+>
+>  @Pointcut可以使用@annotation(AdminOnly)---对有指定注解的类进行切入
+>
+> @Pointcut可以使用方法
+
+```java
+@Aspect
+@Component
+public class LongerAspect{
+    @Pointcut("@annotation(AdminOnly)")
+    public void adminonly(){}
+    
+    @Pointcut("adminonly()")
+    public void before(){
+    }
+}
+```
+
+
+
+![1546851445869](assets/1546851445869.png)
+
+![1546849656350](assets/1546849656350.png)
+
+![1546849697136](assets/1546849697136.png)
+
+![1546849792965](assets/1546849792965.png)
