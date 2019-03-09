@@ -1,4 +1,9 @@
+
+
+
+
 # MYSQL--BASIC
+
 ## 1. 内置函数
 ### 1.1 日期函数
 https://www.cnblogs.com/ggjucheng/p/3352280.html
@@ -87,8 +92,13 @@ DELIMITER;--修改为;
 ## 3. 存储过程
 ### 3.1 简介
 ![](screenshot/2018-12-04-10-45-28.png)
+
 ![](screenshot/2018-12-04-10-45-51.png)
+
 ![](screenshot/2018-12-04-10-46-07.png)
+
+
+
 ### 3.2 无参数过程函数创建和调用
 ```sql
 create procedure sv() select version();
@@ -178,7 +188,27 @@ insert into user(name) values ('a'),('b'),('c');
 select row_count();--结果为3
 ```
 
+### 3.9 prepare
+
+
+
+```mysql
+#创建
+PREPARE stmt1 FROM 'SELECT productCode, productName
+                    FROM products
+                    WHERE productCode = ?';
+#设置值,避免注入
+SET @pc = 'S10_1678';
+#执行
+EXECUTE stmt1 USING @pc;
+#释放
+DEALLOCATE PREPARE stmt1;
+```
+
+
+
 ## 4. 存储引擎
+
 - MyISAM
 - InnoDB
 - Memory
