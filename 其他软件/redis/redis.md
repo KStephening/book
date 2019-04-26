@@ -97,3 +97,10 @@ discard（回滚事务）
 
 ### 3.1 RDB
 
+# windows下的redis
+## 做成服务
+在cmd中打开redis文件夹
+```
+redis-server.exe --service-install redis.windows.conf --service-name Redis6379 --port 6379
+```
+打开“服务”，查看当前是否建立服务，并启动服务，（设置为自动启动）

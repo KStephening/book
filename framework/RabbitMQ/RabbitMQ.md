@@ -81,3 +81,13 @@ abbitmqctl set_user_tags admin administrator    # 给普通用户分配管理员
 ok，你可以在你的浏览器上输入：http://服务器Ip:15672/ 来访问你的rabbitmq监控页面。使用刚刚添加的新用户登录。 
 
 ![1556013927368](assets/1556013927368.png)
+
+外部不能访问，需要配置ip地址，
+修改`/etc/hosts`和`/etc/hostname`
+
+查看端口是否启动
+![](screenshot/2019-04-26-10-16-32.png)
+
+## java使用使用
+### 百分百消息投递成功策略
+![](screenshot/2019-04-26-11-28-19.png)
