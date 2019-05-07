@@ -1,0 +1,40 @@
+// 函数功能: 根据u值和次数k与节点矢量,计算第i个k次B样条基函数
+// 输入参数: u-参数值；m_aNode-节点矢量数组；i-第i个k次B样条的支承区间左端节点下标, k-次数。
+// 输出参数: 返回双精度基函数值
+// 调用函数: 递归调用自身
+
+double GetBaseFunVal(double u,int i,int k)
+{
+	double Val=0.0;
+	double val1=0.;
+	double val2=0.;
+	if(k==0)
+	{
+		if(u<m_aNode[i]||u>m_aNode[i+1]) return Val;		
+		else
+		{
+			Val=1.0;
+			return Val;
+		}
+	}
+	if(k>0)
+	{
+		if(u<m_aNode[i]||u>m_aNode[i+k+1]) return Val;
+		else
+		{
+			double alpha=0.0;
+			double beta=0.0; 
+			double dTemp=0.0;
+			dTemp=m_aNode[i+k]-m_aNode[i];
+			if(dTemp==0.) alpha=0.;
+			else alpha=(u-m_aNode[i])/dTemp;
+			dTemp=m_aNode[i+k+1]-m_aNode[i+1];
+			if (dTemp==0.) beta=0.; 
+			else beta=(m_aNode[i+k+1]-u)/dTemp;  
+			val1=alpha*GetBaseFunVal(u,i,k-1);
+			val2=beta*GetBaseFunVal(u,i+1,k-1);
+			Val=val1+val2;
+		}	
+	}
+	return Val;
+}

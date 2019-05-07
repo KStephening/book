@@ -1,0 +1,20 @@
+//功能：给定用相异节点数组t和重复度数组r表示的节点矢量，又给定用一个数组表示的节点矢量中一个节点的下标值，求得该节点的节点值。
+//输入参数：l-相异节点个数；j-所求的节点下标值；t-相异节点数组；r-重复度数组。
+//输出参数：所求节点的节点值。
+//注：该函数实际位于软件第八章。
+
+double KnotValue(int l，int j，CArray<double，double> &t，CArray<int，int> &r)
+{
+　  double u;
+　　int index=0;
+　　for(int i=0;i<l；i++)
+　　{
+　　　　index＝index+r[i];
+　　　  if((index-l)>=j)
+　　　  {
+　　		   u=t[i];
+　　		   break;
+　　　　}
+　　}
+　　return u;
+}

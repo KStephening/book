@@ -1,0 +1,27 @@
+当前iges文件实体列表:
+
+---------------------------------------
+ParSplineSurfaces:  0
+RuledSurfaces    :  0
+RevSurfaces      :  0
+Cylinders        :  0
+NurbsSurfaces    :  6
+OffsetSurfaces   :  0
+Planes           :  7
+---------------------------------------
+TrimSurfaces     :  13
+---------------------------------------
+CirArcs         :  18
+Composite Curve :  21
+Conics          :  0
+Ploygns         :  0
+Lines           :  42
+ParSplineCurves :  0
+Point3Ds        :  0
+NurbsCurves     :  48
+OffsetCurves    :  0
+SurfaceCurves   :  13
+---------------------------------------
+Matrixs          :  18
+---------------------------------------
+打开文件用时：0小时0分钟0秒

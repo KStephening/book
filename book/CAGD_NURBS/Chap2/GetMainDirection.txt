@@ -1,0 +1,68 @@
+功能：求参数多项式曲面上一点处的最大最小主曲率及其所在用单位矢量表示的主方向m1、m2。
+输入参数：uValue，vValue-曲面上一对参数值；SCx，SCy，SCz-依次为空间曲线幂基参数多项式系数矢量x,y,z分量, 属受保护成员。
+输出参数：k1、k2-由uValue与vValue决定的曲面上一点的最大最小主曲率；
+	  m1、m2-由uValue与vValue决定的曲面上一点的最大最小主曲率所在用单位矢量表示的主方向。
+调用函数：GetSurDerivat-求曲面上一点的偏导矢。
+
+void GetMainDirection()
+{   
+	CPoint p1,p2,pu,puu,puv,pv,pvv,pn;
+	double pux,puy,puz,puux,puuy,puuz,puvx,puvy,puvz,pvx,pvy,pvz,
+pvvx,pvvy,pvvz,pnx,pny,pnz;
+	double lenth,ulenth,vlenth,delta,tanpha1,tanpha2;
+	double E,F,G,L,M,N; 
+	m1.SetSize(3);
+	m2.SetSize(3);
+	p1=GetSurDerivat(0,1,vValue,uValue,1);
+	p2=GetSurDerivat(0,1,vValue,uValue,2);
+	pux=p1.x; puy=p2.y; puz=p1.y;
+	ulenth=sqrt(pux*pux+puy*puy+puz*puz); 
+	p1=GetSurDerivat(0,2,vValue,uValue,1);
+	p2=GetSurDerivat(0,2,vValue,uValue,2);
+	puux=p1.x; puuy=p2.y; puuz=p1.y;
+	p1=GetSurDerivat(1,1,vValue,uValue,1);
+	p2=GetSurDerivat(1,1,vValue,uValue,2);
+	puvx=p1.x; puvy=p2.y; puvz=p1.y; 
+	p1=GetSurDerivat(1,0,vValue,uValue,1);
+	p2=GetSurDerivat(1,0,vValue,uValue,2);
+	pvx=p1.x; pvy=p2.y; pvz=p1.y;
+	vlenth=sqrt(pvx*pvx+pvy*pvy+pvz*pvz); 
+	UVAngle=180.*acos((pux/ulenth)*(pvx/vlenth)+(puy/ulenth)*(pvy/vlenth)+
+(puz/ulenth)*(pvz/vlenth))/PI;
+	p1=GetSurDerivat(2,0,vValue,uValue,1);
+	p2=GetSurDerivat(2,0,vValue,uValue,2);
+	pvvx=p1.x; pvvy=p2.y; pvvz=p1.y;
+	pnx=puy*pvz-puz*pvy;
+	pny=puz*pvx-pux*pvz;
+	pnz=pux*pvy-puy*pvx;
+	lenth=sqrt(pnx*pnx+pny*pny+pnz*pnz); 
+	pnx=pnx/lenth; pny=pny/lenth; pnz=pnz/lenth; 
+	E=pux*pux+puy*puy+puz*puz;
+	F=pux*pvx+puy*pvy+puz*pvz;
+	G=pvx*pvx+pvy*pvy+pvz*pvz;
+	L=pnx*puux+pny*puuy+pnz*puuz;
+	M=pnx*puvx+pny*puvy+pnz*puvz;
+	N=pnx*pvvx+pny*pvvy+pnz*pvvz;
+	delta=(G*L-E*N)*(G*L-E*N)-4.*(E*M-F*L)*(F*N-G*M);
+	if(delta!=0.) 
+	{
+		tanpha1=((G*L-E*N)+sqrt(delta))/(2*(F*N-G*M));
+		tanpha2=((G*L-E*N)-sqrt(delta))/(2*(F*N-G*M));
+		k1=((E*N-2*F*M+G*L)+sqrt(delta))/(2*(E*G-F*F));
+		k2=((E*N-2*F*M+G*L)-sqrt(delta))/(2*(E*G-F*F));
+		m1[0]=pux+tanpha1*pvx;
+		m1[1]=puy+tanpha1*pvy;
+		m1[2]=puz+tanpha1*pvz;
+		lenth=sqrt(m1[0]*m1[0]+m1[1]*m1[1]+m1[2]*m1[2]);
+		m1[0]=m1[0]/lenth;  m1[1]=m1[1]/lenth;  m1[2]=m1[2]/lenth;			    m2[0]=pux+tanpha2*pvx;
+		m2[1]=puy+tanpha2*pvy;
+		m2[2]=puz+tanpha2*pvz;
+		lenth=sqrt(m2[0]*m2[0]+m2[1]*m2[1]+m2[2]*m2[2]);
+		m2[0]=m2[0]/lenth;  m2[1]=m2[1]/lenth;  m2[2]=m2[2]/lenth;		 lenth=sqrt(pux*pux+puy*puy+puz*puz);
+		pux=pux/lenth; puy=puy/lenth; puz=puz/lenth;		 pha=180.*acos(pux*m1[0]+puy*m1[1]+puz*m1[2])/PI;
+	}
+	if(delta==0.)
+	{
+AfxMessageBox("该点是脐点，两个主曲率相同，所有方向都是主方向，\n所有方向的法曲率相同，都是主曲率。");
+	}
+}

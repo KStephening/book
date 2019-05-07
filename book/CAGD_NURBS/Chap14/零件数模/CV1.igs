@@ -1,0 +1,11 @@
+START RECORD GO HERE.                                                   S      1
+1H,,1H;,20HCNEXT - IGES PRODUCT,30HE:\Dieface\V5\Áã¼þÊýÄ£\CV1.igs,44HIBMG      1
+ CATIA IGES - CATIA Version 5 Release 10 ,27HCATIA Version 5 Release 10 G      2
+,32,75,6,75,15,,1.0,2,2HMM,1000,1.0,15H20120710.144103,0.001,1000.0,,   G      3
+17HDASSAULT SYSTEMES,11,0,15H20120710.144103,;                          G      4
+     126       1       0       0       0       0       0       000000001D      1
+     126       0       0       0       0                               0D      2
+126,3,3,1,0,0,0,0.,0.,0.,0.,1.,1.,1.,1.,1.,2.,2.,1.,                   1P      1
+300.,300.,0.,500.,150.,0.,700.,400.,0.,900.,300.,0.,                   1P      2
+0.,1.,0.,0.,1.,0,0;                                                    1P      3
+S      1G      4D      2P      3                                        T      1

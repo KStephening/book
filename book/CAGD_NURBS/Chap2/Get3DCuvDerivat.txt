@@ -1,0 +1,22 @@
+功能：求幂基参数多项式空间曲线p(u)上参数为u点处的导矢。
+输入参数：rank-导矢阶数；u-参数；（Cx,Cy,Cz）-幂基参数多项式空间曲线的系数矢量，属受保护成员。
+输出参数：(px,py,pz)- rank阶导矢，若rank=0，即曲线上点p(u)。
+
+BOOL Get3DCuvDerivat(int rank,double u,double &px,double &py,double &pz)
+{
+		int n;	
+		n=Cx.GetSize()-1;
+		double tempx=0.0,tempy=0.0,tempz=0.0;
+		for(int i=rank;i<=n;i++)
+		{	
+			double tempu=1.0;
+			for(int j=rank;j<i;j++) tempu=tempu*u;
+			tempx=tempx+Fact(i)/Fact(i-rank)*Cx[i]*tempu;
+			tempy=tempy+Fact(i)/Fact(i-rank)*Cy[i]*tempu;
+			tempz=tempz+Fact(i)/Fact(i-rank)*Cz[i]*tempu;
+		}
+		px=tempx;
+		py=tempy;
+		pz=tempz;
+		return TRUE;
+}

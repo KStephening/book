@@ -1,0 +1,47 @@
+//功能：求节点矢量中的相异节点及其重复度。
+//输入参数：k-次数；n-控制顶点数减1；Node-节点矢量。
+//输出参数：Knots-相异节点数组；Repeats-重复度数组。两者都被设置为公开成员。
+//注：该函数实际位于软件第八章。
+
+void GetKnotsRepeats(int &k,int &n,CArray<double,double> &Node)
+{
+	Node.SetSize(n+k+2);
+	Knots.RemoveAll();
+	Repeats.RemoveAll();
+	AddKnot(Node[0]);
+	int l=1;
+	int r=1;
+	AddRepeat(r);
+	for(int i=1;i<n+k+2;i++)
+	{
+		if(Node[i]!=Node[i-1])
+		{
+			AddKnot(Node[i]);
+			l=l+1;				
+			r=1;
+			AddRepeat(r);
+		}
+		else Repeats[l-1]=Repeats[l-1]+1;
+	}
+
+
+void GetKnotsRepeats(int &k,int &n,CArray<double,double> &Node)
+{
+	Knots.RemoveAll();
+	Repeats.RemoveAll();
+	AddKnot(Node[0]);
+	int l=1;
+	int r=1;
+	AddRepeat(r);
+	for(int i=1;i<n+k+2;i++)
+	{
+		if(Node[i]!=Node[i-1])
+		{
+			AddKnot(Node[i]);
+			l=l+1;				
+			r=1;
+			AddRepeat(r);
+		}
+		else Repeats[l-1]=Repeats[l-1]+1;
+	}
+}

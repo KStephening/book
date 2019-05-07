@@ -1,0 +1,41 @@
+功能：计算参数三次样条曲线段上一点处j 阶导矢，若j=0，即为曲线上点。
+输入参数：m_aVertex-数据点，受保护成员；i-曲线段所在节点区间左端点下标；u-曲线参数；j-导矢的阶数（若求点，则输入j =0）。
+输出参数：p-j阶导矢。若j=0，则为曲线上的点。
+调用函数：GetCubicCuvValue -由（4.8）式计算导矢值。
+注：该函数不能计算内节点处的左导矢。
+
+void GetSplineDerivat(int i,double u,int j, CPoint &p)
+{
+	int n=m_aVertex.GetSize();
+	double u1=u;
+	CDoubleArray tx;
+	CDoubleArray ty;
+	tx.SetSize(4);
+	ty.SetSize(4);
+	/*以下8行语句计算（4.7）式左端列阵四个系数矢量*/	
+	tx[0]=m_aVertex[i].x;
+	tx[1]=m_Cx[i];
+	ty[0]=m_aVertex[i].y;
+	ty[1]=m_Cy[i];	
+	tx[2]=2/delta[i]*(3/delta[i]*(m_aVertex[i+1].x-tx[0])-2*tx[1]-m_Cx[i+1]);
+	ty[2]=2/delta[i]*(3/delta[i]*(m_aVertex[i+1].y-ty[0])-2*ty[1]-m_Cy[i+1]);
+	tx[3]=6/delta[i]/delta[i]*(-2/delta[i]*(m_aVertex[i+1].x-tx[0])+tx[1]+m_Cx[i+1]);
+	ty[3]=6/delta[i]/delta[i]*(-2/delta[i]*(m_aVertex[i+1].y-ty[0])+ty[1]+m_Cy[i+1]);
+	GetCubicCuvValue (i,tx,ty,u1,j,p);
+}
+
+void GetCubicCuvValue(int i,CDoubleArray &tx, CDoubleArray &ty, double u,
+ 		      int j, CPoint &p)
+{	
+	double pjx=0,pjy=0;	
+	double du=u-m_aU[i];
+	nt fj=4-j;
+	for(int k=3;k>=j;k--)
+	{
+		pjx=(pjx/fj)*du+tx[k];
+		pjy=(pjy/fj)*du+ty[k];
+		fj=fj-1;
+	}
+	p.x=(int)pjx;
+	p.y=(int)pjy;
+}

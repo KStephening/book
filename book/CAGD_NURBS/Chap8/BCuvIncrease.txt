@@ -1,0 +1,107 @@
+特别提示：本代码为所有顶点的数据类型由整型改为双精度后代码，这样可避免因类型转换引起精度损失。其中被替代的代码仍保留，但已被注释掉。
+功能：计算B样条曲线升阶一次后的新节点矢量与新控制顶点。
+输入输出参数：m_aNode为原节点矢量，m_newNode为升阶一次后的新节点矢量，升阶完成后存入m_aNode；(m_xCVertex,m_yCVertex)-升阶前临时存原控制顶点，升阶后存新顶点；m_nTimes-曲线次数；均为被保护成员。
+调用函数：GetKnotsRepeats-得两个数组表示的节点矢量；
+	  IncreaseNewNodes-得升阶一次后的新节点矢量。
+
+void BCuvIncrease()                   //由于原算法数组下标从1开始，本函数改成从0开始
+{                                                /* m_cVertex升阶前临时存原控制顶点，升阶后存新顶点 */
+	CArray<double,double> oldnode;
+	CArray<double,double> node;                  /* 临时存储用原节点矢量 */
+//	CArray<CPoint,CPoint> c;                     /* 样条A表示的顶点 */
+	CArray<double,double> cx,cy;                 /* 样条A表示的顶点x、y坐标 */
+//	CArray<CPoint,CPoint> cc;                    /* 离散B样条alpha表示的顶点 */
+	CArray<double,double> ccx,ccy;               /* 离散B样条alpha表示的顶点x、y坐标 */
+//	CArray<CPoint,CPoint> cw;
+	CArray<double,double> cwx,cwy;
+	for(int i=0;i<m_aNode.GetSize();i++)         /* 将原节点矢量数组m_aNode存入oldnode与node */
+	{
+		oldnode.Add(m_aNode[i]);
+		node.Add(m_aNode[i]);
+	}          
+//	int nn=m_cVertex.GetSize()-1;                /* nn=原曲线的控制顶点数减1 */
+	int nn=m_xCVertex.GetSize()-1;               /* nn=原曲线的控制顶点数减1 */
+	int k=m_nTimes;                              /* 原曲线次数 */
+	GetKnotsRepeats(k,nn,node);                  /* 用两个数组表示的原节点矢量 */
+	int l=Knots.GetSize()-1;                     /* l=原节点矢量中相异节点数减1 */
+	IncreaseNewNodes();                          /* 得升阶一次后的新节点矢量m_newNode */
+	CPoint p;
+	for(i=0;i<=nn;i++)
+//		c.Add(m_cVertex[i]);
+	{			                     /* 将原控制顶点存入(cx,cy) */
+		cx.Add(m_xCVertex[i]);
+		cy.Add(m_yCVertex[i]);
+	}
+	double x,y;
+	int m=m_nTimes+1;                            /* 升阶一次后曲线的次数m */
+	int n=nn+l;                                  /* n=升阶一次后的新控制顶点数减1 */
+	if(m_aNode.GetSize()>0)
+		m_aNode.RemoveAll();                     /* 清空原节点矢量数组 */		                
+//	if(m_cVertex.GetSize()>0)
+//		m_cVertex.RemoveAll();                   /* 清空新控制顶点数组 */
+	if(m_xCVertex.GetSize()>0) m_xCVertex.RemoveAll();  /* 清空新控制顶点x坐标数组 */
+	if(m_yCVertex.GetSize()>0) m_yCVertex.RemoveAll();  /* 清空新控制顶点y坐标数组 */
+	for(int j=0;j<=n;j++)                        /* 求升阶一次曲线的新控制顶点 */
+	{
+		int r;
+		for(r=0;r<oldnode.GetSize()-1;r++)
+		{                                        /* 找出与新节点矢量中节点值相同的原节点矢量中节点的下标r */
+			if(m_newNode[j]==oldnode[r]&&m_newNode[j]<oldnode[r+1])
+				break;
+		}		
+		for(i=0;i<=m-1;i++)                      /* 给第0~m-1个(共m个)离散B样条alpha表示和样条A表示的顶点赋初值 */
+		{
+//			p.x=0;      p.y=0;
+			x=0;        y=0;
+//			cc.Add(p);  cw.Add(p);
+			ccx.Add(x);  ccy.Add(y);  cwx.Add(x);  cwy.Add(y);
+		}
+		for(i=Max(0,m-r-1);i<=Min(m-1,nn+m-r-1);i++)
+		{                                        /* 给第Max(1,m+1-r)~Min(m,nn+m-1-r)个离散B样条alpha和样条A的顶点赋初值 */
+//			cc[i]=c[i+r-m+1];
+			ccx[i]=cx[i+r-m+1];  ccy[i]=cy[i+r-m+1];
+//			cw[i]=c[i+r-m+1];
+			cwx[i]=cx[i+r-m+1];  cwy[i]=cy[i+r-m+1];
+		}
+		for(int kk=m-1;kk>=1;kk--)               /* 递推计算升阶一次的样条alpha表示和样条A表示的顶点 */
+		{
+			double y1=m_newNode[j+kk];
+			double y2=m_newNode[j+kk+1];
+			for(i=Min(m-1,nn+2*(m-1)-kk-r);i>=Max(m-kk,m-r-1);i--)
+			{
+				double yi=oldnode[r+i-m+1];
+				double yik=oldnode[r+i+kk-m+1];
+				double den=yik-yi;
+//				cc[i].x=int(((y2-yi)*cc[i].x+(yik-y2)*cc[i-1].x)/den);
+				ccx[i]=((y2-yi)*ccx[i]+(yik-y2)*ccx[i-1])/den;
+//				cc[i].y=int(((y2-yi)*cc[i].y+(yik-y2)*cc[i-1].y)/den);
+				ccy[i]=((y2-yi)*ccy[i]+(yik-y2)*ccy[i-1])/den;
+//				cw[i].x=int(((y1-yi)*cw[i].x+(yik-y1)*cw[i-1].x)/den)+cc[i].x;
+				cwx[i]=((y1-yi)*cwx[i]+(yik-y1)*cwx[i-1])/den+ccx[i];
+//				cw[i].y=int(((y1-yi)*cw[i].y+(yik-y1)*cw[i-1].y)/den)+cc[i].y;
+				cwy[i]=((y1-yi)*cwy[i]+(yik-y1)*cwy[i-1])/den+ccy[i];
+			}
+		}
+//		p.x=int(cw[m-1].x/double(m));
+//		p.y=int(cw[m-1].y/double(m));
+		x=cwx[m-1]/double(m);
+		y=cwy[m-1]/double(m);
+//		m_cVertex.Add(p);                        /* 得升阶一次曲线的第j个控制顶点 */
+		m_xCVertex.Add(x);  m_yCVertex.Add(y);   /* 得升阶一次曲线的第j个控制顶点 */
+	}
+	node.RemoveAll();
+	for(i=0;i<m_newNode.GetSize();i++)           /* 将新节点矢量赋入原节点矢量以便再升阶 */
+	{
+		m_aNode.Add(m_newNode[i]);
+		node.Add(m_newNode[i]);
+	} 
+	GetKnotsRepeats(m,n,node); 
+	oldnode.RemoveAll();
+	m_newNode.RemoveAll();
+//	c.RemoveAll();
+	cx.RemoveAll();  cy.RemoveAll();
+//	cc.RemoveAll();
+	ccx.RemoveAll();  ccy.RemoveAll();
+//	cw.RemoveAll();
+	cwx.RemoveAll();  cwy.RemoveAll();
+}

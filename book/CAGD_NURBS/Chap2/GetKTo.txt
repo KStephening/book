@@ -1,0 +1,18 @@
+功能：求幂基参数多项式空间曲线上参数为u的点处的绝对曲率与挠率。
+输入参数：u-参数值；k-次数。
+输出参数：k -绝对曲率；To-挠曲率。
+调用函数：Get3DCuvDerivat-求幂基参数多项式空间曲线的导矢，(Cx,Cy,Cz)-该空间曲线的幂基参数多项式系数矢量, 属受保护成员
+
+BOOL GetKTo(double u,double &k,double &To)
+{
+	double x1,y1,z1,x2,y2,z2,x3,y3,z3,x4,y4,z4,lenth1,lenth2;
+	Get3DCuvDerivat(1,u,x1,y1,z1);
+	Get3DCuvDerivat(2,u,x2,y2,z2);
+	Get3DCuvDerivat(3,u,x3,y3,z3);
+	lenth1=sqrt(x1*x1+y1*y1+z1*z1);
+	x4=x1*z2-y2*z1;  y4=x2*z1-z2*x1;  z4=x1*y1-x2*y1;
+	lenth2=sqrt(x4*x4+y4*y4+z4*z4);
+	k=lenth2/(lenth1*lenth1*lenth1);
+	To=(x3*x4+y3*y4+z3*z4)/(x4*x4+y4*y4+z4*z4);
+	return TRUE;
+}

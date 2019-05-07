@@ -1,0 +1,31 @@
+功能：求二维NURBS曲线参数为u的点处的r阶导矢(px,py)
+输入参数：r-导矢阶数；m_nTimes-曲线次数；u-参数。
+输出参数：(px,py)- r阶导矢。
+调用函数：GetWBPr-计算分子 的r阶导矢与分母 的r阶导数。
+	  GetNURBSDerivat-递归调用自身。
+
+void GetNURBSDerivat(int r,int m_nTimes,double u,double &px,double &py)
+{
+	double pw,PX,PY,PW;
+	double Xikmax,Xikmay;
+	if(r==0)
+	{
+		GetPoint(u,px,py,pw);
+	}
+	else if(r>0)
+	{
+		GetWBPr(r,m_nTimes,u,PX,PY,PW);
+		Xikmax=0;  Xikmay=0; 
+		for(int j=1;j<=r;j++)
+		{
+			GetWBPr(j,m_nTimes,u,PX,PY,PW);
+			GetNURBSDerivat(r-j,m_nTimes,u,px,py);
+			Xikmax=Xikmax+Fact(r)/(Fact(r-j)*Fact(j))*PW*px;
+			Xikmay=Xikmay+Fact(r)/(Fact(r-j)*Fact(j))*PW*py;
+		}
+		GetPoint(u,px,py,pw);
+		GetWBPr(r,m_nTimes,u,PX,PY,PW);
+		px=(PX-Xikmax)/pw;
+		py=(PY-Xikmay)/pw;
+	}
+}

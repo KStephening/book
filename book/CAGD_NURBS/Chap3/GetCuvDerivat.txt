@@ -1,0 +1,29 @@
+功能：计算获取曲线上参数u所对应的点p(u)处的rank阶导矢p,若rank=0，p即p(u)。
+输入参数：n-曲线次数; rank-导矢阶数；u-参数值；m_Cx，m_Cy-幂基参数多项式系数矢量的x与y分量，为受保护成员。
+输出参数：p=(px,py)-rank阶导矢。若rank=0，p=p(u)即曲线参数为u的点。
+调用函数：Fact(j)-计算j阶阶乘。
+
+BOOL GetCuvDerivat(int n,int rank,double u,double &px,double &py)
+{
+	double tempx=0.0,tempy=0.0;	
+	double f=n-rank+1;
+	for(int j=n;j>=rank;j--)
+	{	
+		tempx=tempx/f*u+Fact(j)*m_Cx[j];
+		tempy=tempy/f*u+Fact(j)*m_Cy[j];
+		f=f-1;
+	}
+	px=tempx;
+	py=tempy;
+	return TRUE;
+}
+
+//计算n的阶乘。
+double Fact(int n)
+{
+	double c=1.0;
+	if(n==0)	return c;
+	for(int i=1;i<=n;i++)
+		c=c*i;
+	return c;
+}

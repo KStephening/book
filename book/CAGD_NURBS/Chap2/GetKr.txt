@@ -1,0 +1,12 @@
+功能：取得幂基参数多项式平面曲线上参数u所对应的相对曲率。
+输入参数：u-参数值；k-次数。	输出参数：kr-相对曲率。
+调用函数：Get2DCuvDerivat -求幂基参数多项式平面曲线的导矢，见3.2节，(m_Cx,m_Cy)-该平面曲线的幂基参数多项式系数矢量，属受保护成员。
+
+BOOL GetKr(double u,double &kr)
+{
+	double x1,y1,x2,y2;
+	Get2DCuvDerivat(1,u,x1,y1);
+	Get2DCuvDerivat(2,u,x2,y2);
+	kr=(x1*y2-x2*y1)/pow(x1*x1+y1*y1,1.5);
+	return TRUE;
+}

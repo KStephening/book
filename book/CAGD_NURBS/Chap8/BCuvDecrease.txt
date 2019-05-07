@@ -1,0 +1,110 @@
+特别提示：本代码为所有顶点的数据类型由整型改为双精度后代码，这样可避免因类型转换引起精度损失。其中被替代的代码仍保留，但已被注释掉。
+功能：B样条曲线降阶，系由Cohen-Lyche-Shumaker给出的B样条曲线升阶一次算法启发而来，采用求广义逆的最小二乘解。
+输入参数：(m_xCVertex,m_yCVertex)-降阶前临时存原控制顶点；m_aNode-原节点矢量；m_nTimes-原曲线次数；都是受保护成员；EndsPass-插值首末顶点选择码。
+输出参数：(m_xCVertex,m_yCVertex)-降阶后存新顶点；m_newNode-降阶后新节点矢量。
+调用函数：GetKnotsRepeats-一个数组表示的节点矢量改用相异节点和重复度两个数组表示；DecreaseNewNodes-求降阶一次后的新节点矢量；GetA-求(8.17)式第2式函数值；GetAlpha-求(8.17)式第3式函数值；bginv-利用奇异值分解求一般 阶实矩阵 的广义逆 ；brmul-矩阵相乘。Bginv与brmul均由文献[79]给出的C算法改写。
+
+void BCuvDecrease()
+{	/* m_cVertex降阶前临时存原控制顶点，降阶后存新顶点 */
+	CArray<double,double> oldnode;
+	CArray<double,double> node;     /* 临时存储用原节点矢量 */
+	int m=m_nTimes;			        /* m_nTimes-原曲线次数 */
+	int kk=m_nTimes;                /* kk-降阶前曲线的次数 */
+//	int nn=m_cVertex.GetSize()-1;   /* nn=原曲线的控制顶点数减1 */
+	int nn=m_xCVertex.GetSize()-1;   /* nn=原曲线的控制顶点数减1 */
+	for(int i=0;i<m_aNode.GetSize();i++)
+	{    /* 将原节点矢量数组m_aNode存入oldnode与node */
+		oldnode.Add(m_aNode[i]);
+		node.Add(m_aNode[i]);
+	}          
+	GetKnotsRepeats(m,nn,node);      /* 用两个数组表示的原节点矢量 */
+	int l=Knots.GetSize()-1;         /* l=原节点矢量中相异节点数减1 */
+	DecreaseNewNodes();              /* 得降阶一次后的新节点矢量m_newNode */
+	CPoint p;	
+	int ka,n=nn-l;                   /* n=降阶一次后的新控制顶点数减l */
+    //以下采用求广义逆方法求降阶后内顶点
+	CArray<double,double> M,MM;   /* 分别存(nn+1)*(n+1)阶的M矩阵及其(n+1)*(nn+1)阶广义逆矩阵,用一维数组给出 */
+	M.SetSize((nn+1)*(n+1)); MM.SetSize((n+1)*(nn+1));	
+	CArray<double,double> Bx,By;  /* 分别存原顶点x、y分量 */
+	Bx.SetSize(nn+1);     By.SetSize(nn+1);
+	for(i=0;i<nn+1;i++)
+	{
+//		Bx[i]=m_cVertex[i].x;	By[i]=m_cVertex[i].y;
+		double x=m_xCVertex[i], y=m_yCVertex[i];
+		Bx[i]=m_xCVertex[i];	By[i]=m_yCVertex[i];
+	}
+	CArray<double,double> Cx,Cy;/*存降阶一次后顶点两分量 */
+	Cx.SetSize(n+1);     Cy.SetSize(n+1);   
+	CArray<double,double> U,V;
+	U.SetSize((nn+1)*(nn+1));    V.SetSize((n+1)*(n+1));
+	for(int j=0;j<=nn;j++)
+	{   /* 形成矩阵M,已把系数1/kk乘入,因此所得M的任一行元素之和应等于1 */		
+		for(int i=0;i<=n;i++)
+		{
+			M[j*(n+1)+i]=GetA(i,j,kk-1)/kk;
+		}
+	}
+	if(EndsPass==true)   /* 若强加插值端点约束，相应改变降阶方程组 */
+	{
+		for(int j=1;j<=nn-1;j++)
+		{
+			M[j*(n+1)]=0;  M[j*(n+1)+n]=0;
+			Bx[j]=Bx[j]-Bx[0]*GetA(0,j,kk-1)/kk-Bx[nn]*GetA(n,j,kk-1)/kk;
+			By[j]=By[j]-By[0]*GetA(0,j,kk-1)/kk-By[nn]*GetA(n,j,kk-1)/kk;
+		}
+	}
+	double eps=0.00000000001;
+	if(nn+1>=n+1) ka=nn;
+	else ka=n+1;
+	int ii=bginv(M,nn+1,n+1,MM,eps,U,V,ka); //ii-返回标志值，若ii>0正常，若ii<0表示在求广义逆的
+	                                        //奇异值分解过程中迭代超过了60次还未满足精度要求
+	brmul(MM,Bx,n+1,nn+1,1,Cx);
+	brmul(MM,By,n+1,nn+1,1,Cy);
+	for(i=0;i<=n;i++)
+	{
+//		m_cVertex[i].x=int(Cx[i]); 
+//		m_cVertex[i].y=int(Cy[i]);
+		m_xCVertex[i]=Cx[i]; 
+		m_yCVertex[i]=Cy[i];
+		double x=m_xCVertex[i], y=m_yCVertex[i];
+	}
+//	m_cVertex.SetSize(n+1);
+	m_xCVertex.SetSize(n+1);  m_yCVertex.SetSize(n+1);
+	node.RemoveAll();
+	for(i=0;i<m_newNode.GetSize();i++) node.Add(m_newNode[i]);
+	m_nQTimes=kk-1;    /* 降阶后的次数 */ 
+	GetKnotsRepeats(m_nQTimes,n,node);
+	oldnode.RemoveAll();
+}
+
+//用奇异分解法求mxn阶矩阵a的广义逆aa(为nxm阶)，见徐士良书p60.
+int bginv(CArray<double,double> &a,int m,int n,CArray<double,double> &aa,double eps,
+				   CArray<double,double> &u,CArray<double,double> &v,int ka)
+{   
+	int i,j,ii,k,l,t,p,q,f;
+	u.SetSize(m*m);
+	v.SetSize(n*n);
+	if(m>=n) ka=m+1;
+	else ka=n+1;
+    ii=bmuav(a,m,n,u,v,eps,ka);   /* ii-返回标志值，ii>0正常，ii<0表示出现了迭代超过了60次还未求得某个奇异值的情况，此时矩阵的分解式为UAV。 */ 
+    if (ii<0) return(-1);
+    j=n;
+    if (m<n) j=m;
+    j=j-1;
+    k=0;
+    while ((k<=j)&&(a[k*n+k]!=0.0)) k=k+1;
+    k=k-1;
+    for (i=0; i<=n-1; i++)
+	{
+		for (j=0; j<=m-1; j++)
+		{ 
+			t=i*m+j; aa[t]=0.0;
+			for (l=0; l<=k; l++)
+			{ 
+				f=l*n+i; p=j*m+l; q=l*n+l;
+				aa[t]=aa[t]+v[f]*u[p]/a[q];
+			}
+		}
+	}
+    return(1);
+}
