@@ -1,5 +1,7 @@
 # VUE-BASIC
 ## 1.basic
+
+https://www.bilibili.com/video/av50680998/?p=24
 ### 1.1 `el`--选择器
 ### 1.2 `$`--实例属性与方法
 ```html
