@@ -205,6 +205,163 @@ EXECUTE stmt1 USING @pc;
 DEALLOCATE PREPARE stmt1;
 ```
 
+3.10 循环
+
+Mysql语句编写循环
+
+1. 单层循环
+   编写存储过程
+```sql
+drop procedure if exists test_loop;
+   delimiter //
+   create procedure test_loop()
+   begin
+   	declare i int default 1;
+   	while i<10
+   	do
+   		insert into test values(i,concat('hangzhou',i));
+   		set i=i+1;
+   	end while;
+   	commit;
+   end //
+   delimiter ;
+```
+   检验输出
+```sql
+mysql> select * from test;
+   Empty set (0.00 sec)
+
+
+mysql> call test_loop();
+Query OK, 0 rows affected (0.35 sec)
+
+mysql> select * from test;
++-------------+---------------+
+| location_id | location_name |
++-------------+---------------+
+|           1 | hangzhou1     |
+|           2 | hangzhou2     |
+|           3 | hangzhou3     |
+|           4 | hangzhou4     |
+|           5 | hangzhou5     |
+|           6 | hangzhou6     |
+|           7 | hangzhou7     |
+|           8 | hangzhou8     |
+|           9 | hangzhou9     |
++-------------+---------------+
+9 rows in set (0.00 sec)
+```
+2. 双层循环
+
+创建表
+```sql
+CREATE TABLE `dim_time` (
+  `TimeKey` int(11) NOT NULL,
+  `Hour` tinyint(4) DEFAULT NULL,
+  `Minute` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`TimeKey`)
+)
+```
+编写存储过程
+```sql
+drop procedure if exists insertValueIntoDimTime;
+delimiter //
+create procedure insertValueIntoDimTime()
+begin
+	declare hour int default 0;
+	declare min int default 0;	
+		while hour < 24
+		do
+			while min < 60
+			do
+				insert into dim_time values(hour*100+min,hour,min);
+				set min=min+1;
+			end while;
+			set min = 0;
+			set hour = hour+1;
+		end while;
+end //
+delimiter ;
+```
+运行存储过程
+```
+mysql> call insertValueIntoDimTime;
+Query OK, 1 row affected (22.12 sec)
+
+# 验证输出
+mysql> select count(*) from dim_time;
++----------+
+| count(*) |
++----------+
+|     1440 |
++----------+
+1 row in set (0.02 sec)
+
+mysql> select * from dim_time order by timekey limit 10;
++---------+------+--------+
+| TimeKey | Hour | Minute |
++---------+------+--------+
+|       0 |    0 |      0 |
+|       1 |    0 |      1 |
+|       2 |    0 |      2 |
+|       3 |    0 |      3 |
+|       4 |    0 |      4 |
+|       5 |    0 |      5 |
+|       6 |    0 |      6 |
+|       7 |    0 |      7 |
+|       8 |    0 |      8 |
+|       9 |    0 |      9 |
++---------+------+--------+
+10 rows in set (0.00 sec)
+
+mysql> select * from dim_time order by timekey desc limit 10;
++---------+------+--------+
+| TimeKey | Hour | Minute |
++---------+------+--------+
+|    2359 |   23 |     59 |
+|    2358 |   23 |     58 |
+|    2357 |   23 |     57 |
+|    2356 |   23 |     56 |
+|    2355 |   23 |     55 |
+|    2354 |   23 |     54 |
+|    2353 |   23 |     53 |
+|    2352 |   23 |     52 |
+|    2351 |   23 |     51 |
+|    2350 |   23 |     50 |
++---------+------+--------+
+10 rows in set (0.00 sec)
+```
+3. 日期循环
+3.1 需求
+今天需要从订单库中找 出过去六个月的订单中是桌面机的订单，所以需要写一个简单的日期循环，用于读取数据。
+
+3.2实现
+```sql
+drop procedure if exists cal_device_order_data;
+delimiter //
+create procedure cal_device_order_data()
+begin
+    declare i int default 1;
+	declare start_date date ;  -- 当前日子减去6个月
+	declare end_date date ; -- 当前天
+	
+	select date_sub(current_date(),interval 6 month) into start_date;
+	select current_date() into end_date;
+	
+	while start_date < end_date
+	do
+	    select start_date;
+	    set start_date = date_add(start_date,interval 1 day);
+	end while;
+	commit;
+end //
+delimiter ;
+```
+作者：LittleLawson 
+来源：CSDN 
+原文：https://blog.csdn.net/liu16659/article/details/81940002 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+
 
 
 ## 4. 存储引擎
@@ -243,3 +400,6 @@ DEALLOCATE PREPARE stmt1;
 - alter table table_name engine=engine;
 
 ## mysql5.7复制
+```
+
+```
